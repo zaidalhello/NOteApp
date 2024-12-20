@@ -12,16 +12,7 @@ Window {
     property string searchQuery: ""
     property int currantIndex: 0
     property bool cheakStates: true
-    ListModel {
-        id: mainNoteList
-        ListElement { title: "Buy Groceries"; description: "Purchase milk, bread, eggs, and fruits." ;states:true ;showDeletedBtn:false }
-        ListElement { title: "Morning Workout"; description: "Do 30 minutes of cardio and strength training." ;states:true;showDeletedBtn:false }
-        ListElement { title: "Finish Report"; description: "Complete the final draft of the financial report." ;states:true;showDeletedBtn:false }
-        ListElement { title: "Call the Bank"; description: "Schedule a call with the bank to discuss mortgage options." ;states:true;showDeletedBtn:false }
-        ListElement { title: "Clean the House"; description: "Vacuum the living room and mop the kitchen floor." ;states:true;showDeletedBtn:false }
-        ListElement { title: "Read a Book"; description: "Read at least 20 pages of the current book." ;states:true;showDeletedBtn:false }
-        ListElement { title: "Plan Weekend Trip"; description: "Research and book accommodation for the upcoming weekend trip.";states:true;showDeletedBtn:false  }
-    }
+
     ListModel {
         id: detailsNoteList
     }
@@ -30,10 +21,19 @@ Window {
     }
     onSearchQueryChanged: {
         filteredNoteList.clear();
-        for (var i = 0; i < mainNoteList.count; i++) {
-            var note = mainNoteList.get(i);
-            if (note.title.toLowerCase().includes(searchQuery.toLowerCase()) ) {
-                filteredNoteList.append(note);
+
+        for (var i = 0; i < mainNoteList.rowCount(); i++) {
+            var title = mainNoteList.data(mainNoteList.index(i, 0), 257);
+            var description = mainNoteList.data(mainNoteList.index(i, 0), 258);
+            var states = mainNoteList.data(mainNoteList.index(i, 0), 259);
+            var showDeletedBtn = mainNoteList.data(mainNoteList.index(i, 0), 260);
+            if (title && title.toLowerCase().includes(searchQuery.toLowerCase())) {
+                filteredNoteList.append({
+                                            "title": title,
+                                            "description": description,
+                                            "states": states,
+                                            "showDeletedBtn": showDeletedBtn
+                                        });
             }
         }
     }
@@ -41,7 +41,6 @@ Window {
 
     Rectangle{
         id:root
-
         x:10
         y:30
         height: parent.height
@@ -62,14 +61,13 @@ Window {
         visible: false
         pageTitle:"Edit Note"
     }
-
     AddEditDetailsListview {
         id: addnoteListview
         model: detailsNoteList
         visible: false
-
-
     }
+
+
 }
 
 

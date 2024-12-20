@@ -10,6 +10,7 @@ qt_standard_project_setup(REQUIRES 6.5)
 
 qt_add_executable(appNoteApp
     main.cpp
+    notelistmodel.cpp # Include your C++ source files here
 )
 
 qt_add_qml_module(appNoteApp
@@ -17,26 +18,12 @@ qt_add_qml_module(appNoteApp
     VERSION 1.0
     QML_FILES
         Main.qml
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        QML_FILES
-        QML_FILES TitleAndSearch.qml
-        QML_FILES MyMainDetailsListview.qml
-        QML_FILES AddEditDetailsListview.qml
-        QML_FILES CustomBtn.qml
-        QML_FILES
-        QML_FILES MyDeleteHedaer.qml
+        TitleAndSearch.qml
+        MyMainDetailsListview.qml
+        AddEditDetailsListview.qml
+        CustomBtn.qml
+        MyDeleteHedaer.qml
+    SOURCES notelistmodel.h # List header files with Q_OBJECT here
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

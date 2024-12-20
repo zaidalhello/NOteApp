@@ -16,28 +16,35 @@ Rectangle{
                            titleListviewRoot.showDeletBtn=false
                            deleteArr=[]
                            numberofDeletedElemant=0
-                           for (var i = 0; i < mainNoteList.count; i++) {
-                               var deletedNote = mainNoteList.get(i);
-                               if (deletedNote.showDeletedBtn===true ) {
-                                   mainNoteList.set(i,{showDeletedBtn:false })
+                           for (var i = 0; i < mainNoteList.rowCount(); i++) {
+                               var title = mainNoteList.data(mainNoteList.index(i, 0), 257);
+                               var description = mainNoteList.data(mainNoteList.index(i, 0), 258);
+                               var states = mainNoteList.data(mainNoteList.index(i, 0), 259);
+                               var showDeletedBtn = mainNoteList.data(mainNoteList.index(i, 0), 260);
+                               if (showDeletedBtn) {
+                                   mainNoteList.updateNoteState(i, title, description, states,false)
+
                                }
                            }
                        }
         }
-        
         CustomBtn{
             width: parent.width/3
             btnColor:"red"
             btnText:"Delete("+numberofDeletedElemant +")"
             btnOnClick:()=>{
-                           for (var x = 0; x < deleteArr.length; x++) {
-                               for (var i = 0; i < mainNoteList.count; i++) {
-                                   var deletedNote = mainNoteList.get(i);
-                                   if (deletedNote.showDeletedBtn===true ) {
-                                       mainNoteList.remove(i)
-                                   }
+
+                           for (var i = 0; i < mainNoteList.rowCount(); i++) {
+
+                               var showDeletedBtn = mainNoteList.data(mainNoteList.index(i, 0), 260);
+                               if (showDeletedBtn) {
+                                   mainNoteList.deleteNote(i)
                                }
                            }
+
+
+
+
                            titleListviewRoot.showDeletBtn=false
                            deleteArr=[]
                            numberofDeletedElemant=0

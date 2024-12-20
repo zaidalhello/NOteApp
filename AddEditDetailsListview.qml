@@ -1,87 +1,77 @@
 import QtQuick
+
 ListView {
     property bool isEditMode: true
-    property string pageTitle: "Edit Note"
-    property bool showDeleteBtn: true
+    property string pageTitle: isEditMode ? "Edit Note" : "Add Note"
+    property bool showDeleteBtn: isEditMode
     id: detailsListview
-    highlightRangeMode:ListView.NoHighlightRange
+
+    highlightRangeMode: ListView.NoHighlightRange
     anchors.fill: parent
     anchors.margins: 20
-    header:
-        Row{
-        spacing: 80
+
+    header: Item {
         width: parent.width
         height: 40
-        Rectangle{
+
+
+        Rectangle {
+            id: backBtn
             width: 50
             height: 40
-            Text{
-                width: parent.width
-                height: parent.height
-                anchors.fill:parent
-                verticalAlignment: TextInput.AlignVCenter
-                horizontalAlignment: TextInput.AlignHCenter
+            anchors.left: parent.left
+
+            Text {
+                anchors.centerIn: parent
                 text: "<"
                 font.pixelSize: 15
-                font.bold:true
+                font.bold: true
                 color: "#a8a8a8"
-                MouseArea{
+
+                MouseArea {
                     anchors.fill: parent
                     onClicked: {
                         detailsNoteList.clear()
-                        detailsListview.visible=false
-                        titleListview.visible=true
-                        searchQuery= ""
+                        detailsListview.visible = false
+                        titleListview.visible = true
+                        searchQuery = ""
                     }
                 }
             }
         }
-        Rectangle{
-            width: 50
+
+        Rectangle {
+            width: parent.width - 100
             height: 40
-            Text{
-                width: parent.width
-                height: parent.height
-                anchors.fill:parent
-                verticalAlignment: TextInput.AlignVCenter
-                horizontalAlignment: TextInput.AlignHCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            Text {
+                anchors.centerIn: parent
                 text: pageTitle
                 font.pixelSize: 20
+                font.bold: true
                 color: "black"
-                focus: true
-                font.bold:true
-                MouseArea{
-                    anchors.fill: parent
-                    onClicked: {
-                        detailsNoteList.clear()
-                        detailsListview.visible=false
-                        titleListview.visible=true
-                        searchQuery= ""
-                    }
-                }
-
             }
         }
     }
-    delegate: Column{
-        spacing: 10
+
+    delegate: Column {
+        spacing: 20
         width: detailsListview.width
-        height:100
+
         Rectangle {
-            width: parent.width-10
+            width: parent.width - 10
             height: 50
             color: "#d3d3d3"
             radius: 5
-            clip:true
-            
+            clip: true
             TextInput {
-                anchors.fill: parent
                 id: detailesTitleFieldEditId
+                anchors.fill: parent
                 text: model.title
                 font.pixelSize: 24
                 verticalAlignment: TextInput.AlignVCenter
                 color: "black"
-                focus: true
                 leftPadding: 10
             }
         }
@@ -91,73 +81,85 @@ ListView {
             color: "#d3d3d3"
             radius: 5
             clip: true
+
             TextEdit {
                 id: detailesDescriptionFieldEditId
                 anchors.fill: parent
-                width: parent.width - 20
-                height: parent.height - 10
                 text: model.description
                 font.pixelSize: 24
-                verticalAlignment: TextEdit.AlignTop
                 color: "black"
-                focus: true
-                leftPadding: 10
                 wrapMode: TextEdit.Wrap
                 padding: 10
-                onTextChanged: {
-                    detailesDescriptionFieldEditId.text=text
-                }
-                
             }
         }
-
-        CustomBtn{
-            width:model.states?  60:90
+        CustomBtn {
+            width: model.states ? 60 : 90
             visible: isEditMode
-            btnColor:model.states?  "orange":"green"
-            btnText:model.states? "Pending":"Completed"
-            btnOnClick:()=> {
-                           model.states=!model.states
-                           cheakStates=model.states
-                       }
+            btnColor: model.states ? "orange" : "green"
+            btnText: model.states ? "Pending" : "Completed"
+            btnOnClick: () => {
+                            model.states = !model.states;
+                            cheakStates = model.states;
+                        }
         }
-        CustomBtn{
-            btnColor:"green"
-            btnText:"save"
-            btnOnClick:()=>{
-                           if(isEditMode)
-                           {
-                               mainNoteList.set(currantIndex,{title:detailesTitleFieldEditId.text,description:detailesDescriptionFieldEditId.text,states:cheakStates,showDeletedBtn:false })
-                           }else
-                           {
-                               mainNoteList.insert(0, {title: detailesTitleFieldEditId.text, description: detailesDescriptionFieldEditId.text, states: true,showDeletedBtn:false })
-                           }
-                           detailsNoteList.clear()
-                           detailsListview.visible=false
-                           titleListview.visible=true
-                           searchQuery= "Search"
-                       }
+        Rectangle
+        {
+            width: parent.width - 10
+            height:  isEditMode?150:190
+
+            CustomBtn {
+                anchors.centerIn:  parent
+                visible: showDeleteBtn
+                btnColor: "red"
+                btnText: "Delete"
+                btnOnClick: () => {
+
+                                mainNoteList.deleteNote(currantIndex);
+                                detailsNoteList.clear();
+                                detailsListview.visible = false;
+                                titleListview.visible = true;
+                                searchQuery = "";
+
+                            }
+            }
+            CustomBtn {
+                anchors.bottom:  parent.bottom
+                btnColor: "green"
+                btnText: "Save"
+                btnOnClick: () => {
+                                if (isEditMode) {
+                                    mainNoteList.updateNoteState(
+                                        currantIndex,
+                                        detailesTitleFieldEditId.text,
+                                        detailesDescriptionFieldEditId.text,
+                                        cheakStates,
+                                        false
+                                        );
+                                } else {
+                                    mainNoteList.addNote(
+                                        detailesTitleFieldEditId.text,
+                                        detailesDescriptionFieldEditId.text,
+                                        true,
+                                        false
+                                        );
+                                }
+                                detailsNoteList.clear();
+                                detailsListview.visible = false;
+                                titleListview.visible = true;
+                                searchQuery = "";
+                            }
+            }
+
         }
-        CustomBtn{
-            visible: showDeleteBtn
-            btnColor:"red"
-            btnText:"Delete"
-            btnOnClick:()=>{
-                           mainNoteList.remove(currantIndex)
-                           detailsNoteList.clear()
-                           detailsListview.visible=false
-                           titleListview.visible=true
-                           searchQuery= ""
-                       }
-        }
+
     }
+
     states: State {
         when: !isEditMode
         PropertyChanges {
             target: detailsListview
-            visible: true
-            pageTitle:"Add Note"
-            showDeleteBtn:false
+            pageTitle: "Add Note"
+            showDeleteBtn: false
         }
     }
 }

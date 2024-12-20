@@ -35,7 +35,6 @@ Column{
                     titleListviewRoot.visible=false
                 }
                 onPressAndHold:()=>{
-                                   titleListview.contentY = 0
                                    deleteBtn.visible=true
                                    titleListviewRoot.showDeletBtn=true
                                    titleListview.contentY = 0
@@ -59,22 +58,29 @@ Column{
                         btnColor:parent.color
                         btnText:model.showDeletedBtn?"❌":"🗑"
                         btnOnClick:()=>{
+                                       console.log(deleteArr+"/"+model.showDeletedBtn+"*"+deleteArr.includes(index))
                                        if (deleteArr.includes(index)) {
                                            titleListviewRoot.deleteArr.splice(index);
                                            model.showDeletedBtn=false
-
+                                           mainNoteList.updateNoteState(index, model.title, model.description, model.states, false);
                                        }else{
                                            titleListviewRoot.deleteArr.push(index);
                                            model.showDeletedBtn=true
+                                           mainNoteList.updateNoteState(index, model.title, model.description, model.states, true);
                                        }
+                                       var count=0;
+                                       for (var i = 0; i < mainNoteList.rowCount(); i++) {
 
-                                       titleListviewRoot.numberofDeletedElemant=titleListviewRoot.deleteArr.length
-                                       console.log(deleteArr+"/"+model.showDeletedBtn)
+                                           var showDeletedBtn = mainNoteList.data(mainNoteList.index(i, 0), 260);
+                                           if (showDeletedBtn) {
+                                               count++
+                                           }
+                                       }
+                                       titleListviewRoot.numberofDeletedElemant=count
+
                                    }
                     }
-
                 }
-
                 Column{
                     width: model.states?parent.width-80:parent.width-110
                     Text {
@@ -123,7 +129,10 @@ Column{
                                        return
                                    }
 
-                                   mainNoteList.set(index,{title:model.title,description:model.description,states:!model.states,showDeletedBtn:false })}
+
+                                   mainNoteList.updateNoteState(index, model.title, model.description, !model.states, false);
+
+                               }
                 }
                 Rectangle{
                     id:navigatBtn
